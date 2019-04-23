@@ -45,4 +45,8 @@ RUN apk add --no-cache curl openssl \
 	&& rmdir docker \
 	&& rm docker.tgz \
 	&& docker -v \
-	&& apk del curl openssl
+	&& apk del openssl
+
+COPY docker-entrypoint.sh /usr/local/bin/
+
+ENTRYPOINT ["docker-entrypoint.sh"]
