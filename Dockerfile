@@ -40,7 +40,7 @@ ENV DOCKER_SHA256 4a9766d99c6818b2d54dc302db3c9f7b352ad0a80a2dc179ec164a3ba29c2d
 
 COPY --from=0 /opt/google-cloud-sdk /opt/google-cloud-sdk
 
-RUN apk add --no-cache curl openssl make build-base gcc \
+RUN apk add --no-cache curl openssl make build-base gcc rsync \
 	&& set -x \
 	&& curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
 	&& echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
