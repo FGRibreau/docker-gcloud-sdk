@@ -1,4 +1,4 @@
-# docker build -t fgribreau/docker-gcloud-base:{gcloud --version}-{kubectl version}-{docker --version} -f Dockerfile .
+# docker build -t fgribreau/docker-gcloud-base:{gcloud --version}-{kubectl version}-{docker --version}-{node --version} -f Dockerfile .
 # docker push fgribreau/docker-gcloud-base:{gcloud --version}-{kubectl version}-{docker --version}
 # docker push fgribreau/docker-gcloud-base:228.0.0-{kubectl version}-{docker --version}
 
