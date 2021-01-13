@@ -1,15 +1,20 @@
-# docker build -t fgribreau/docker-gcloud-base:{gcloud --version}-{kubectl version}-{docker --version}-{node --version} -f Dockerfile .
+# docker build .
+# echo "docker tag xx fgribreau/docker-gcloud-base:$(gcloud --version | head -n 1 | tr ' ' '-')-$(kubectl version -o=json | jq -r '.clientVersion.gitVersion')-$(docker --version | tr ' ' '-' | tr ',' '-')-node-$(node --version)"
 # docker push fgribreau/docker-gcloud-base:{gcloud --version}-{kubectl version}-{docker --version}
 # docker push fgribreau/docker-gcloud-base:228.0.0-{kubectl version}-{docker --version}
 
+
+
+# docker build -t fgribreau/docker-gcloud-base:287.0.-1.14-17.03.0-ce-v12.20.1 -f Dockerfile .
+
 # https://hub.docker.com/r/lakoo/node-alpine-gcloud/dockerfile
-FROM node:12-alpine
+FROM node:12-stretch
 MAINTAINER William Chong <williamchong@lakoo.com>
 
 RUN mkdir -p /opt
 WORKDIR /opt
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
 	bash \
 	ca-certificates \
 	git \
@@ -17,6 +22,7 @@ RUN apk add --no-cache \
 	python \
 	tar \
 	gzip
+
 
 ENV CLOUDSDK_PYTHON_SITEPACKAGES 1
 ENV GCLOUD_VERSION 287.0.0
@@ -30,17 +36,11 @@ ENV PATH /opt/google-cloud-sdk/bin:$PATH
 
 WORKDIR /root
 
-# https://hub.docker.com/r/lakoo/node-gcloud-docker
-FROM lakoo/node-alpine-gcloud:latest
-MAINTAINER William Chong <williamchong@lakoo.com>
-
 ENV DOCKER_BUCKET get.docker.com
 ENV DOCKER_VERSION 17.03.0-ce
 ENV DOCKER_SHA256 4a9766d99c6818b2d54dc302db3c9f7b352ad0a80a2dc179ec164a3ba29c2d3e
 
-COPY --from=0 /opt/google-cloud-sdk /opt/google-cloud-sdk
-
-RUN apk add --no-cache curl openssl make build-base gcc gettext rsync \
+RUN apt-get update && apt-get install -y curl openssl make jq gcc gettext rsync build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
 	&& set -x \
 	&& curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
 	&& echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
@@ -48,8 +48,7 @@ RUN apk add --no-cache curl openssl make build-base gcc gettext rsync \
 	&& mv docker/* /usr/local/bin/ \
 	&& rmdir docker \
 	&& rm docker.tgz \
-	&& docker -v \
-	&& apk del openssl
+	&& docker -v
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
