@@ -48,7 +48,11 @@ RUN apt-get update && apt-get install -y curl openssl make jq gcc gettext rsync 
 	&& mv docker/* /usr/local/bin/ \
 	&& rmdir docker \
 	&& rm docker.tgz \
-	&& docker -v
+	&& docker -v \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip awscliv2.zip \
+	&& ./aws/install \
+	&& aws --version
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
