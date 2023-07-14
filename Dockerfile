@@ -5,10 +5,10 @@
 
 
 
-# docker build -t fgribreau/docker-gcloud-base:287.0.-1.14-17.03.0-ce-v12.20.1 -f Dockerfile .
+# docker build -t fgribreau/docker-gcloud-base:Google-Cloud-SDK-438.0.0-Docker-version-18.09.1--build-node-v16.20.1 -f Dockerfile .
 
 # https://hub.docker.com/r/lakoo/node-alpine-gcloud/dockerfile
-FROM node:12-stretch
+FROM node:16.20.1-buster
 MAINTAINER William Chong <williamchong@lakoo.com>
 
 RUN mkdir -p /opt
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 
 
 ENV CLOUDSDK_PYTHON_SITEPACKAGES 1
-ENV GCLOUD_VERSION 287.0.0
+ENV GCLOUD_VERSION 438.0.0
 RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && tar -xvf google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && rm google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz
 RUN google-cloud-sdk/install.sh --path-update=true --bash-completion=true --rc-path=/root/.bashrc --additional-components alpha beta app kubectl
 
@@ -36,18 +36,7 @@ ENV PATH /opt/google-cloud-sdk/bin:$PATH
 
 WORKDIR /root
 
-ENV DOCKER_BUCKET get.docker.com
-ENV DOCKER_VERSION 17.03.0-ce
-ENV DOCKER_SHA256 4a9766d99c6818b2d54dc302db3c9f7b352ad0a80a2dc179ec164a3ba29c2d3e
-
-RUN apt-get update && apt-get install -y curl openssl make jq gcc gettext rsync build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-	&& set -x \
-	&& curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
-	&& echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
-	&& tar -xzvf docker.tgz \
-	&& mv docker/* /usr/local/bin/ \
-	&& rmdir docker \
-	&& rm docker.tgz \
+RUN apt-get update && apt-get install -y docker.io=18.09.1+dfsg1-7.1+deb10u3 curl openssl make jq gcc gettext rsync build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
 	&& docker -v
 
 COPY docker-entrypoint.sh /usr/local/bin/
